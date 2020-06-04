@@ -6,6 +6,7 @@ class CursorIndicator extends Component<CursorIndicatorProps> {
   static defaultProps = {
     borderColor: '#FFF',
     backgroundColor: '#F4B700',
+    cursorRadius:6
   }
 
   indicator = React.createRef<View>()
@@ -21,11 +22,11 @@ class CursorIndicator extends Component<CursorIndicatorProps> {
   }
 
   render() {
-    const { cursorRadius, borderColor, backgroundColor } = this.props
+    const {  borderColor, backgroundColor } = this.props
     const cursorStyle = {
-      width: cursorRadius * 2,
-      height: cursorRadius * 2,
-      borderRadius: cursorRadius,
+      width: 16,
+      height: 16,
+      borderRadius: 8,
       borderColor,
       backgroundColor,
     }
@@ -41,7 +42,7 @@ class CursorIndicator extends Component<CursorIndicatorProps> {
 const styles = StyleSheet.create({
   cursor: {
     position: 'absolute',
-    borderWidth: 6,
+    borderWidth: 2.14,
     ...Platform.select({
       ios: {
         shadowColor: 'black',
