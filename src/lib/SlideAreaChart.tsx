@@ -22,8 +22,8 @@ type State = {
 }
 
 const defaultCursorProps = {
-  cursorMarkerHeight: 24,
-  cursorMarkerWidth: 24,
+  cursorMarkerHeight: 16,
+  cursorMarkerWidth: 16,
   cursorWidth: 2,
 }
 
