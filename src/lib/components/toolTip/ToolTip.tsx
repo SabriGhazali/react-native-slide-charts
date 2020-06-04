@@ -46,7 +46,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
     x: number,
     cursorMarkerHeight: number,
     realPercentage: number,
-    standoff: number = 10
+    standoff: number = 2
   ) => {
     this.realPercentage = realPercentage
     this.toolTipPosition = { x, y, cursorMarkerHeight, standoff }
@@ -57,7 +57,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
       x - (width / 10) - borderRadius - ((width - (width / 5) - (2 * borderRadius)) * realPercentage)
     if (this.toolTip.current != null) {
       this.toolTip.current.setNativeProps({
-        top: y - cursorMarkerHeight / 2 - (this.state.height + width / 5) - standoff,
+        top: y  - (this.state.height + width / 5) - standoff,
         left: labelPosition
       })
     }
@@ -104,6 +104,8 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
     const { fontSize, textStyles } = this.props
     const width = this.props.width ?? null
     const inputs: JSX.Element[] = []
+
+    console.log("this.props.toolTipTextRenderers === ",this.props.toolTipTextRenderers);
     for (let i = 0; i < this.numberOfLines; i++) {
 
       // Added to account for android textInput padding / late rendering
@@ -144,7 +146,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
     return (
       <View
         ref={lockTriangleCenter ? null : this.triangle}
-        style={[styles.triangleContainer, { top: this.state.height }, lockTriangleCenter ? centerPosition : null]}
+        style={[styles.triangleContainer, { top: this.state.height  }, lockTriangleCenter ? centerPosition : null]}
       >
         <Svg height={width / 5} width={width / 5} >
           <Polygon points={trianglePoint} fill={backgroundColor} />
@@ -160,13 +162,16 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
    */
   updateLayoutOnChange = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout
+    
     const oldHeight = this.state.height
     const oldWidth = this.state.width
     const { x, y, cursorMarkerHeight, standoff } = this.toolTipPosition
 
+    console.log("cursorMarkerHeight === ",cursorMarkerHeight)
+
     // Height should not change significantly past the initial layout
     if (Math.abs(oldHeight - height) > 8) {
-      this.setState({ height }, () => this.setNativeToolTipPositionPropY(y, cursorMarkerHeight, standoff))
+      this.setState({ height : height }, () => this.setNativeToolTipPositionPropY(y , cursorMarkerHeight, standoff))
     }
 
     // Prevent over updating the width, this can prevent jitteriness as some devices have minimal changes
@@ -230,11 +235,15 @@ const styles = StyleSheet.create({
   },
   square: {
     position: 'absolute',
+    padding:10,
+    paddingLeft:20,
+    paddingRight:20,
     top: 0,
     left: 0,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor:"red",
     ...Platform.select({
       ios: {
         shadowColor: 'black',
