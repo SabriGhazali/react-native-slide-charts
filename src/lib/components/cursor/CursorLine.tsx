@@ -25,7 +25,9 @@ class CursorLine extends Component<CursorLineProps> {
     return (
       <Animated.View
         ref={this.line}
-        style={[styles.line, { width, backgroundColor }]}
+        style={[styles.line, {width:0,  borderWidth:0.7,
+          borderStyle: 'dashed',
+          borderColor:'#D8D8D8' }]}
       />
     )
   }
