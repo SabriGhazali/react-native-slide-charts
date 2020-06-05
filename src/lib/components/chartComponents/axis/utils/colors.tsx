@@ -16,10 +16,10 @@ export const horizontalLineGradient = (
   props: GradientProps & { count: number }
 ) => (
   <Defs key={props.id}>
-    <LinearGradient x1='0%' y1='0%' x2='100%' y2='0%' id={props.id}>
-      <Stop stopColor='#dadada' offset='0%' stopOpacity='1' />
-      <Stop stopColor='#dadada' offset='50%' stopOpacity='1' />
-      <Stop stopColor='#dadada' offset='100%' stopOpacity='1' />
+    <LinearGradient x1='0%' y1='0%' x2='0%' y2='0%' id={props.id}>
+       <Stop stopColor='#dadada' offset='0%' stopOpacity='0' />
+      <Stop stopColor='#dadada' offset='50%' stopOpacity='0' />
+      <Stop stopColor='#dadada' offset='100%' stopOpacity='0' />
     </LinearGradient>
   </Defs>
 )
