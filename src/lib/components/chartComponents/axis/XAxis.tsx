@@ -49,7 +49,7 @@ class XAxis extends Component<XAxisComponentProps> {
   }: XAxisMarkerProps) => (
       <Text
         x={x}
-        y={y}
+        y={y + 10}
         fill={fill}
         alignmentBaseline={alignmentBaseline || 'hanging'}
         textAnchor={textAnchor}
