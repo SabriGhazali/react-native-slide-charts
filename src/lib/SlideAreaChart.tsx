@@ -159,7 +159,7 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
 
     // If chart shrinks animate X as well
     const stateX = this.state.x.__getValue?.()
-    let x = this.chartWidth / 2 + axisWidth + paddingLeft
+    let x = this.chartWidth + axisWidth + paddingLeft
     let oldX: number | undefined = undefined
     if (stateX != null) {
       x = stateX + axisWidth + paddingLeft
@@ -235,7 +235,7 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
     const yRangeCalculated = this.calculateYRange()
 
     if (this.cursor.current != null && this.toolTip.current != null && this.chart.current != null) {
-      const x = (this.chartWidth / 2) + axisWidth + paddingLeft
+      const x = (this.chartWidth) + axisWidth + paddingLeft
       const realPercentage = (x - axisWidth - paddingLeft) / this.chartWidth
       this.cursor.current.setNativeCursorIndicatorProps({
         top: this.scaleY(yRangeCalculated[0]) - cursorMarkerHeight / 2,
@@ -271,6 +271,11 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
    * to prevent too many calls being sent across the bridge which we have seen to cause lag on slow Android devices
    */
   moveCursorBinary(value: number) {
+
+    if(value < this.scaleX(1) || value > this.scaleX(this.props.data.length - 2)){
+      return;
+    }
+
     if (this.props.throttleAndroid && isAndroid()) {
       this.nextValue = value
       if (this.next) { return }
@@ -283,6 +288,7 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
   }
 
   moveCursorBinaryCore(value: number) {
+
     if (!this.mounted) {
       this.mounted = true
 
@@ -410,7 +416,15 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
            * END
            */
           onHandlerStateChange={evt => {
-            if (evt.nativeEvent.state === 1 || evt.nativeEvent.state === 3 || evt.nativeEvent.state === 5) {
+
+            if(evt.nativeEvent.state === 5){
+              const index =  this.scaleX.invert(evt.nativeEvent.x).toFixed(0);
+              const value = this.scaleX(index);
+              this.state.x.setValue(value)
+              this.moveCursorBinary(value)
+              this.showIndicator(0)
+
+            }else if (evt.nativeEvent.state === 1 || evt.nativeEvent.state === 3 ) {
               this.showIndicator(0)
             } else if (evt.nativeEvent.state === 2) {
               this.showIndicator(1)
@@ -429,6 +443,9 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
             onStartShouldSetResponder={() => !this.isAnimating}
             onResponderRelease={() => this.showIndicator(0)}
             onResponderGrant={evt => {
+
+              console.log("onResponderGrant")
+
               const touchLocation = evt.nativeEvent.pageX - axisWidth - paddingLeft
               const xToNumber = this.state.x.__getValue?.()
               if (xToNumber?.toFixed(2) === touchLocation.toFixed(2)) {
@@ -455,10 +472,6 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
     this.previousProperties = path.svgPathProperties(this.startLine)
     this.properties = path.svgPathProperties(this.line)
 
-    if (alwaysShowIndicator) {
-      this.moveCursorBinary(this.chartWidth / 2)
-    }
-
     /**
      * Set the indicator to hidden here for initial movements and it will not appear again until touched
      * unless it is set to always be visible
@@ -476,13 +489,14 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
     }
 
     setTimeout(() => {
+      
 
       /**
        * Run callback on mount as we are skipping the initial Android movement to the position
        * due to it not being mounted at the proper time as noted above
        */
       if (isAndroid()) {
-        const x = (this.chartWidth / 2) + axisWidth + paddingLeft
+        const x = (this.chartWidth) + axisWidth + paddingLeft
 
         if (callbackWithX) { callbackWithX(this.scaleX.invert(x)) }
         const y = SVGPathYFromX(this.properties, x)
@@ -498,13 +512,18 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
 
         // If we aren't animating the chart run the animate chart function at 1 to move 
         // the chart to the first position completely including any toolTip height calculations
-        this.animateChart(1)
+      //  this.animateChart(1)
         this.state.x.addListener(({ value }) => { this.moveCursorBinary(value) })
       }
 
       // Allow clicks on chart
       this.isAnimating = false
     }, 500)
+
+    if (alwaysShowIndicator) {      
+      this.moveCursorBinary(this.scaleX(this.props.data.length - 2))
+    }
+    
   }
 
   shouldComponentUpdate(nextProps: SlideAreaChartProps) {
@@ -518,7 +537,12 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
   }
 
   componentDidUpdate() {
-    const { animated } = this.props
+
+    console.log("pdated")
+
+    const {
+      axisWidth, alwaysShowIndicator, callbackWithX, callbackWithY, animated, paddingLeft,
+    } = this.props
 
     // If new props received adjust the line accordingly with animation
     // to prevent jumping we remove the touch listener first
@@ -550,7 +574,14 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
       this.isAnimating = false
       this.animateChart(1)
       this.state.x.addListener(({ value }) => { this.moveCursorBinary(value) })
+
+      if (alwaysShowIndicator) {      
+        this.moveCursorBinary(this.scaleX(this.props.data.length - 2))
+      }
+
     }
+
+
   }
 
   render() {
