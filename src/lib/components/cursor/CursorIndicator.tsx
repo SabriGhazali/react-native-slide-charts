@@ -11,7 +11,11 @@ class CursorIndicator extends Component<CursorIndicatorProps> {
 
   indicator = React.createRef<View>()
 
-  shouldComponentUpdate() {
+  shouldComponentUpdate(nextProps) {
+
+    if(nextProps.backgroundColor != this.props.backgroundColor){
+      return true;
+    }
     return false
   }
 
