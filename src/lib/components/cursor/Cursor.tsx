@@ -12,7 +12,11 @@ class Cursor extends Component<CursorComponentProps> {
   cursorIndicator = React.createRef<CursorIndicator>()
   cursorLine = React.createRef<CursorLine>()
 
-  shouldComponentUpdate() {
+  shouldComponentUpdate(nextProps) {
+
+    if(nextProps.cursorColor != this.props.cursorColor){
+      return true;
+    }
     return false
   }
 
