@@ -3,10 +3,12 @@ import { StyleSheet, View, Platform, TextInput, Animated, LayoutChangeEvent,Dime
 import { Svg, Polygon } from 'react-native-svg'
 import { isAndroid } from '../../utils/platform'
 import { ToolTipDefaultProps, ToolTipComponentProps } from './utils/types'
+import CustomAmountText from "@common/Text/CustomAmountText"
 
 type State = {
   height: number
-  width: number
+  width: number,
+  amount : string
 }
 
 const WIDTH = Dimensions.get('window').width;
@@ -27,7 +29,8 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
 
   state: State = {
     height: 0,
-    width: 0
+    width: 0,
+    amount: "0",
   }
 
   numberOfLines = this.props.toolTipTextRenderers.length
@@ -97,7 +100,11 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
   }
 
   setNativeTextProps = (id: number, nativeProps: Object) => {
-    if (this.textInputs[id] != null && this.textInputs[id].current != null) {
+    console.log("called === ",nativeProps);
+
+    if(nativeProps.amount){
+      this.setState({amount : nativeProps.amount});
+    }else if (this.textInputs[id] != null && this.textInputs[id].current != null) {
       this.textInputs[id].current.setNativeProps(nativeProps)
     }
   }
@@ -114,7 +121,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
       const baseHeight = (textStyles[i] != null && textStyles[i].fontSize != null) ?
         textStyles[i].fontSize : fontSize
       const height = baseHeight ? baseHeight + 5 : 22
-      inputs.push(
+     inputs.push( i == 0 ?
         <TextInput
           scrollEnabled={false}
           numberOfLines={1}
@@ -123,15 +130,26 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
           editable={false}
           allowFontScaling={false}
           multiline
-          style={[
+          style={[ 
             styles.headerText,
-            { fontSize },
+            { fontSize},
             width ? { width } : null,
             textStyles[i],
             styles.textCentering,
             isAndroid() ? { height, paddingTop: 0, paddingBottom: 0 } : null,
           ]}
+        /> : 
+
+        <CustomAmountText 
+          amount={this.state.amount} 
+          key={`input-${i}`}
+          //ref={this.textInputs[i]}
+          bigFontSize={16} 
+          smallFontSize={13} 
+          expFontSize={10} 
+          amountColor={"white"} 
         />
+
       )
     }
     return inputs.reverse().map(input => input)
@@ -195,6 +213,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
       this.state.height !== nextState.height
       || this.state.width !== nextState.width
       || this.props.toolTipTextRenderers.length !== nextProps.toolTipTextRenderers.length
+      || this.state.amount != nextState.amount
     ) { return true }
     return false
   }
