@@ -102,8 +102,8 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
   setNativeTextProps = (id: number, nativeProps: Object) => {
     console.log("called === ",nativeProps);
 
-    if(nativeProps.amount){
-      this.setState({amount : nativeProps.amount});
+    if(nativeProps.amount && nativeProps.currency){
+      this.setState({amount : nativeProps.amount,currency :nativeProps.currency});
     }else if (this.textInputs[id] != null && this.textInputs[id].current != null) {
       this.textInputs[id].current.setNativeProps(nativeProps)
     }
@@ -148,6 +148,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
           smallFontSize={13} 
           expFontSize={10} 
           amountColor={"white"} 
+          currency={this.state.currency}
         />
 
       )
