@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { Text, TSpan } from 'react-native-svg'
 import { axisLabelColor } from './utils/colors'
+
+import { Platform } from 'react-native';
+
 import {
   XAxisComponentProps, XAxisDefaultProps, XAxisLabelAlignment,
   LabelAndAlignment, XAxisMarkerProps
@@ -21,7 +24,7 @@ class XAxis extends Component<XAxisComponentProps> {
 
   // Only update axis if the data, height, or width changes
   shouldComponentUpdate(nextProps: XAxisComponentProps) {
-    const { data, axisMarkerLabels, width, height, axisHeight, axisWidth,axisLabelStyle } = this.props
+    const { data, axisMarkerLabels, width, height, axisHeight, axisWidth, axisLabelStyle } = this.props
     if (
       data.length !== nextProps.data.length
       || JSON.stringify(data) !== JSON.stringify(nextProps.data)
@@ -46,8 +49,10 @@ class XAxis extends Component<XAxisComponentProps> {
     key,
     labelStyle,
     label,
-    alignmentBaseline
+    alignmentBaseline,
+    rtl
   }: XAxisMarkerProps) => (
+    Platform.OS == 'ios' ?
       <Text
         x={x}
         y={y + 10}
@@ -60,14 +65,29 @@ class XAxis extends Component<XAxisComponentProps> {
           {label}
         </TSpan>
       </Text>
-    )
+      :
+      <Text
+        x={rtl ? x - 10 : x}
+        y={rtl ? y + 20 : y + 10}
+        fill={fill}
+        alignmentBaseline={alignmentBaseline || 'hanging'}
+        textAnchor={textAnchor}
+        key={key}
+      >
+        <TSpan {...labelStyle} >
+          {label}
+        </TSpan>
+      </Text>
+
+    // <Text style={{...labelStyle}}>{label}</Text>
+  )
 
   // For charts that want an x-label, label can be left, right, or center justified
   // If the chart has markers and a label the label is pinned to the bottom
   renderAxisLabel = () => {
     const {
       axisLabelAlignment, scaleY, yRange, labelTopPadding, axisLabelStyle, height, labelBottomOffset,
-      axisLabel, data, width, scaleX, axisMarkerLabels, axisWidth, paddingLeft, paddingRight
+      axisLabel, data, width, scaleX, axisMarkerLabels, axisWidth, paddingLeft, paddingRight, rtl
     } = this.props
     const stopX = data.length > 1 ? scaleX(data[data.length - 1].x) : width - paddingRight
 
@@ -90,7 +110,8 @@ class XAxis extends Component<XAxisComponentProps> {
       key: 'horizontalLabel',
       labelStyle: axisLabelStyle,
       label: axisLabel,
-      alignmentBaseline: (axisMarkerLabels.length > 0) ? 'baseline' : undefined
+      alignmentBaseline: (axisMarkerLabels.length > 0) ? 'baseline' : undefined,
+      rtl: rtl
     })
   }
 
@@ -103,7 +124,7 @@ class XAxis extends Component<XAxisComponentProps> {
   ): LabelAndAlignment => {
     const {
       axisMarkerLabels, specialStartMarker, specialEndMarker, data, scaleX, axisWidth,
-      width, markerSpacing, minimumSpacing, adjustForSpecialMarkers, paddingLeft, paddingRight
+      width, markerSpacing, minimumSpacing, adjustForSpecialMarkers, paddingLeft, paddingRight, rtl
     } = this.props
     const startX = data.length > 1 ? scaleX(data[0].x) : axisWidth + paddingLeft
     const stopX = data.length > 1 ? scaleX(data[data.length - 1].x) : width - paddingRight
@@ -123,16 +144,42 @@ class XAxis extends Component<XAxisComponentProps> {
       }
       if (i === numberOfMarks - 1) {
 
+        // if (rtl) {
+        //   return {
+        //     label: specialEndMarker || marker,
+        //     markerAlignment: adjustForSpecialMarkers ?
+        //       (specialEndMarker ? 'end' : 'middle') :
+        //       (numberOfBars === numberOfMarks ? 'middle' : 'end'),
+        //     specialX: adjustForSpecialMarkers ?
+        //       (specialEndMarker ? stopX - 10 : undefined) :
+        //       (numberOfBars === numberOfMarks ? undefined : stopX - 20),
+        //   }
+        // } else {
         // If the last element should be right aligned to the end of the chart
-        return {
-          label: specialEndMarker || marker,
-          markerAlignment: adjustForSpecialMarkers ?
-            (specialEndMarker ? 'end' : 'middle') :
-            (numberOfBars === numberOfMarks ? 'middle' : 'end'),
-          specialX: adjustForSpecialMarkers ?
-            (specialEndMarker ? stopX : undefined) :
-            (numberOfBars === numberOfMarks ? undefined : stopX),
+        if (i < 6) {
+          return {
+            label: specialEndMarker || marker,
+            markerAlignment: adjustForSpecialMarkers ?
+              (specialEndMarker ? 'middle' : 'middle') :
+              (numberOfBars === numberOfMarks ? 'middle' : 'middle'),
+            specialX: adjustForSpecialMarkers ?
+              (specialEndMarker ? stopX - 20 : undefined) :
+              (numberOfBars === numberOfMarks ? undefined : stopX - 20),
+          }
         }
+        else {
+          return {
+            label: specialEndMarker || marker,
+            markerAlignment: (numberOfBars === numberOfMarks ? 'middle' : 'middle'),
+            specialX: adjustForSpecialMarkers ?
+              (specialEndMarker ? stopX - 20 : undefined) :
+              (numberOfBars === numberOfMarks ? undefined : stopX - 20),
+          }
+
+        }
+        // }
+
+
       }
       if (markerSpacing) {
         if (
@@ -163,8 +210,9 @@ class XAxis extends Component<XAxisComponentProps> {
       axisHeight,
       paddingLeft,
       paddingRight,
+      rtl
     } = this.props
-
+    console.log("hello chart", rtl)
     if (axisHeight === 0) { return null }
 
     const numberOfBars = data.length
@@ -207,7 +255,8 @@ class XAxis extends Component<XAxisComponentProps> {
         textAnchor: labelAndAlignment.markerAlignment,
         key: `horizontalMarker-${i}`,
         labelStyle: axisLabelStyle,
-        label: labelAndAlignment.label
+        label: labelAndAlignment.label,
+        rtl: rtl
       })
     })
 
