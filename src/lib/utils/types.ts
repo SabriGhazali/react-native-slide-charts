@@ -1,106 +1,155 @@
-import { StyleProp, ViewStyle, Animated } from 'react-native'
-import * as shape from 'd3-shape'
-import { GradientProps } from '../components/chartComponents/charts/utils/types'
-import {
-  XAxisProps,
-  YAxisProps,
-} from '../components/chartComponents/axis/utils/types'
-import { ToolTipProps } from '../components/toolTip/utils/types'
-import { CursorProps } from '../components/cursor/utils/types'
+import { ScaleTime, ScaleLinear } from 'd3'
+import { TSpanProps, TextAnchor, AlignmentBaseline } from 'react-native-svg'
+import { GradientProps } from '../../charts/utils/types'
 
-export type ExtendedAnimatedValue = Animated.Value & {
-  // __getValue is a unexposed method on Animated.Value
-  __getValue?: () => number | undefined
-}
-
-type SharedChartComponentProps = {
-  data?: Array<{ x: number | Date; y: number }>
-  yRange?: [number, number]
-  xRange?: [number, number] | [Date, Date]
-  yAxisProps?: YAxisProps
-  xAxisProps?: XAxisProps
-  toolTipProps?: ToolTipProps
-  callbackWithX?: (x: number | Date) => void
-  callbackWithY?: (y: number) => void
-  showIndicatorCallback?: (opacity: number) => void
-  onPress?: () => void
-  style?: StyleProp<ViewStyle>
-  scrollable?: boolean
-  fillColor?: string
-}
-
-type SharedChartProps = SharedChartComponentProps & {
-  xScale?: 'time' | 'linear'
-  axisWidth?: number
-  axisHeight?: number
-  chartPaddingTop?: number
-  paddingTop?: number
-  paddingBottom?: number
-  paddingLeft?: number
-  paddingRight?: number
-  height?: number
-  width?: number
-  alwaysShowIndicator?: boolean
-  renderFillGradient?: (props: GradientProps) => JSX.Element | null
-  animated?: boolean
-  shouldCancelWhenOutside?: boolean
-  throttleAndroid?: boolean
-}
-
-type SharedChartDefaultProps = {
+type AxisProps = {
   data: Array<{ x: number | Date; y: number }>
-  height: number
+  scaleX: ScaleTime<number, number> | ScaleLinear<number, number>
+  scaleY: ScaleLinear<number, number>
+  yRange: [number, number]
   width: number
+  height: number
   axisWidth: number
   axisHeight: number
-  chartPaddingTop: number
-  paddingTop: number
-  paddingBottom: number
   paddingLeft: number
   paddingRight: number
-  alwaysShowIndicator: boolean
-  xScale: 'time' | 'linear'
-  renderFillGradient: (props: GradientProps) => JSX.Element | null
-  animated: boolean
-  shouldCancelWhenOutside: boolean
-  throttleAndroid: boolean
 }
 
-type SharedBarChartProps = {
-  barSelectedColor?: string
-  barWidth?: number
-  hideSelection?: boolean
-  selectionChangedCallback?: (bar: number) => void
+type YAxisPartialProps = {
+  averageLineColor?: string
+  verticalLineWidth?: number
+  interval?: number
+  numberOfTicks?: number
+  axisLabel?: string
+  verticalLineColor?: string
+  horizontalLineColor?: string
+  showAverageLine?: boolean
+  markAverageLine?: boolean
+  hideMarkers?: boolean
 }
 
-export type SlideBarChartProps = SharedChartProps &
-  SharedBarChartProps & {
+export type YAxisProps = YAxisPartialProps & {
+  fullBaseLine?: boolean
+  markFirstLine?: boolean
+  axisLabelStyle?: TSpanProps & { color: string }
+  axisMarkerStyle?: TSpanProps & { color: string }
+  axisAverageMarkerStyle?: TSpanProps & { color: string }
+  renderVerticalLineGradient?: (props: GradientProps) => JSX.Element | null
+  renderHorizontalLineGradient?: (
+    props: GradientProps & { count: number }
+  ) => JSX.Element | null
+  horizontalLineWidth?: number
+  showBaseLine?: boolean
+  labelTopPadding?: number
+  axisLabelAlignment?: YAxisLabelAlignment
+  rotateAxisLabel?: boolean
+  markerChartOffset?: number
+  labelLeftOffset?: number
+  averageMarkerDecimals?: number
+}
+
+export type YAxisDefaultProps = {
+  fullBaseLine: boolean
+  markFirstLine: boolean
+  axisLabelStyle: TSpanProps & { color: string }
+  axisMarkerStyle: TSpanProps & { color: string }
+  axisAverageMarkerStyle: TSpanProps & { color: string }
+  renderVerticalLineGradient: (props: GradientProps) => JSX.Element | null
+  renderHorizontalLineGradient: (
+    props: GradientProps & { count: number }
+  ) => JSX.Element | null
+  averageLineColor: string
+  verticalLineWidth: number
+  horizontalLineWidth: number
+  showBaseLine: boolean
+  labelTopPadding: number
+  axisLabelAlignment: YAxisLabelAlignment
+  rotateAxisLabel: boolean
+  markerChartOffset: number
+  labelLeftOffset: number
+  averageMarkerDecimals: number
+}
+
+export type YAxisComponentProps = YAxisDefaultProps &
+  YAxisPartialProps &
+  AxisProps & { paddingTop: number; paddingBottom: number }
+
+export type YAxisMarkerProps = {
+  x: number
+  y: number
+  fill: string
+  alignmentBaseline: AlignmentBaseline
+  key: string
+  labelStyle: TSpanProps & { color: string }
+  label?: string | number | null
+  textAnchor?: TextAnchor
+  rotated?: boolean
+}
+
+type XAxisPartialProps = {
+  axisLabel?: string
+  specialStartMarker?: string
+  specialEndMarker?: string
+  markerSpacing?: number
+}
+
+export type XAxisProps = XAxisPartialProps & {
+  axisLabelStyle?: TSpanProps & { color: string }
+  axisLabelAlignment?: XAxisLabelAlignment
+  labelTopPadding?: number
+  axisMarkerLabels?: string[]
+  markerTopPadding?: number
+  adjustForSpecialMarkers?: boolean
+  minimumSpacing?: number
+  labelBottomOffset?: number
+  isRTL: boolean
+}
+
+export type XAxisDefaultProps = {
+  axisLabelStyle: TSpanProps & { color: string }
+  axisLabelAlignment: XAxisLabelAlignment
+  labelTopPadding: number
+  axisMarkerLabels: string[]
+  markerTopPadding: number
+  adjustForSpecialMarkers: boolean
+  minimumSpacing: number
+  labelBottomOffset: number
+  isRTL: boolean
+}
+
+export type XAxisComponentProps = XAxisDefaultProps &
+  XAxisPartialProps &
+  AxisProps & {
+    barWidth?: number
     barSpacing?: number
-    renderSelectedFillGradient?: (props: GradientProps) => JSX.Element | null
   }
 
-export type SlideBarChartDefaultProps = SharedChartDefaultProps & {
-  barSpacing: number
-  renderSelectedFillGradient: (props: GradientProps) => JSX.Element | null
+export type XAxisMarkerProps = {
+  x: number
+  y: number
+  fill: string
+  textAnchor: 'middle' | 'start' | 'end'
+  key: string
+  labelStyle: TSpanProps & { color: string }
+  label?: string | number | null
+  alignmentBaseline?: AlignmentBaseline
 }
 
-export type SlideBarChartComponentProps = SlideBarChartDefaultProps &
-  SharedChartComponentProps &
-  SharedBarChartProps
-
-export type SlideAreaChartProps = SharedChartProps & {
-  curveType?: shape.CurveFactory | shape.CurveFactoryLineOnly
-  cursorProps?: CursorProps
-  chartLineColor?: string
-  chartLineWidth?: number
+export enum XAxisLabelAlignment {
+  right = 'right',
+  left = 'left',
+  center = 'center',
 }
 
-export type SlideAreaChartDefaultProps = SharedChartDefaultProps & {
-  curveType: shape.CurveFactory | shape.CurveFactoryLineOnly
-  cursorProps: CursorProps
-  chartLineColor: string
-  chartLineWidth: number
+export enum YAxisLabelAlignment {
+  top = 'top',
+  bottom = 'bottom',
+  middle = 'middle',
+  aboveTicks = 'aboveTicks',
 }
 
-export type SlideAreaChartComponentProps = SlideAreaChartDefaultProps &
-  SharedChartComponentProps
+export type LabelAndAlignment = {
+  markerAlignment: TextAnchor
+  label?: string
+  specialX?: number
+}
