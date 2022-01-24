@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Platform, TextInput, Animated, LayoutChangeEvent,Dimensions } from 'react-native'
+import { StyleSheet, View, Platform, TextInput, Animated, LayoutChangeEvent,Dimensions,Text } from 'react-native'
 import { Svg, Polygon } from 'react-native-svg'
 import { isAndroid } from '../../utils/platform'
 import { ToolTipDefaultProps, ToolTipComponentProps } from './utils/types'
 import CustomAmountText from "@common/Text/CustomAmountText"
+import Strings from '@Strings';
+import Font from '../../../../../../src/components/styles/Font'
 
 type State = {
   height: number
@@ -114,7 +116,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
     const { fontSize, textStyles } = this.props
     const width = this.props.width ?? null
     const inputs: JSX.Element[] = []
-
+    
     for (let i = 0; i < this.numberOfLines; i++) {
 
       // Added to account for android textInput padding / late rendering
@@ -139,7 +141,8 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
             isAndroid() ? { height, paddingTop: 0, paddingBottom: 0 } : null,
           ]}
         /> : 
-
+        this.props.recharge ? <Text style={{fontFamily:Font.MontserratMedium,fontSize:fontSize,color:"white"}}
+      >{this.state.amount} {Strings.recharges}</Text>:
         <CustomAmountText 
           amount={this.state.amount} 
           key={`input-${i}`}

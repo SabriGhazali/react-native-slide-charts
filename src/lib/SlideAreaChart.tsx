@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  View, StyleSheet, Animated, TextInput, TouchableWithoutFeedback, Platform
+  View, StyleSheet, Animated, TextInput, TouchableWithoutFeedback, Platform,Text
 } from 'react-native'
 import * as shape from 'd3-shape'
 import * as path from 'svg-path-properties'
@@ -15,6 +15,8 @@ import { isAndroid, vw } from './utils/platform'
 import { interpolatePath } from 'd3-interpolate-path'
 import { ExtendedAnimatedValue, SlideAreaChartComponentProps, SlideAreaChartDefaultProps, SlideAreaChartProps } from './utils/types'
 import { isValidDate, getDataMin, getDataMax } from './utils/range'
+import Strings from '@Strings';
+import Font from '../../../../src/components/styles/Font'
 
 type State = {
   x: ExtendedAnimatedValue
@@ -608,8 +610,10 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
       paddingRight,
       chartPaddingTop,
       onPress,
+      recharge,
+      total
     } = this.props
-
+    
     this.chartWidth = width - axisWidth - paddingLeft - paddingRight
 
     const combinedCursorProps={...defaultCursorProps, ...cursorProps}
@@ -631,7 +635,7 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
     const startLine = animated ?
       this.calculateStartLine() :
       this.calculateLine()
-
+    
     return (
       <View style={[
         styles.container,
@@ -647,6 +651,7 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
           paddingRight: 0,
         }
       ]}>
+        {recharge && <Text style={{position:"absolute",left:10,top:10,fontFamily:Font.MontserratBold,fontSize:21,color:"#76A82F"}}>{total} <Text style={{fontFamily:Font.MontserratMedium,fontSize:12}}>{Strings.recharges}</Text></Text>}
         <AreaChart
           ref={this.chart}
           data={data}
@@ -674,6 +679,7 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
           {...combinedCursorProps}
         />}
         {!onPress && <ToolTip
+        recharge={recharge}
           ref={this.toolTip}
           {...toolTipProps}
         />}
