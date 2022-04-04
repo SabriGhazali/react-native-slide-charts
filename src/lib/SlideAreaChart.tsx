@@ -651,7 +651,7 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
           paddingRight: 0,
         }
       ]}>
-        {recharge && <Text style={{position:"absolute",left:10,top:10,fontFamily:Font.MontserratBold,fontSize:21,color:"#76A82F"}}>{total} <Text style={{fontFamily:Font.MontserratMedium,fontSize:12}}>{Strings.recharges}</Text></Text>}
+        {recharge && <Text style={{position:"absolute",left:10,top:10,fontFamily:Font.MontserratBold,fontSize:21,color:"#76A82F"}}>{total} <Text style={{fontFamily:Font.MontserratMedium,fontSize:12}}>{total == 1 || total == 0?Strings.refill :Strings.recharges}</Text></Text>}
         <AreaChart
           ref={this.chart}
           data={data}

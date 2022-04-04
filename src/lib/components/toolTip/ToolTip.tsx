@@ -142,7 +142,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
           ]}
         /> : 
         this.props.recharge ? <Text style={{fontFamily:Font.MontserratMedium,fontSize:fontSize,color:"white"}}
-      >{this.state.amount} {Strings.recharges}</Text>:
+      >{this.state.amount} {this.state.amount == 1 || this.state.amount == 0 ? Strings.refill:Strings.recharges}</Text>:
         <CustomAmountText 
           amount={this.state.amount} 
           key={`input-${i}`}
