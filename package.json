@@ -44,7 +44,7 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*",
+    "react-native": "*"
   },
   "devDependencies": {
     "@babel/core": "7.8.7",
