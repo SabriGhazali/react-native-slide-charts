@@ -41,46 +41,23 @@ class XAxis extends Component<XAxisComponentProps> {
   }
 
   // Returns an svg text marker
-  renderAxisMarker = ({
-    x,
-    y,
-    fill,
-    textAnchor,
-    key,
-    labelStyle,
-    label,
-    alignmentBaseline,
-    rtl
-  }: XAxisMarkerProps) => (
-    Platform.OS == 'ios' ?
-      <Text
-        x={x}
-        y={y + 10}
-        fill={fill}
-        alignmentBaseline={alignmentBaseline || 'hanging'}
-        textAnchor={textAnchor}
-        key={key}
-      >
-        <TSpan {...labelStyle} >
-          {label}
-        </TSpan>
-      </Text>
-      :
-      <Text
-        x={rtl ? x - 10 : x}
-        y={rtl ? y + 20 : y + 10}
-        fill={fill}
-        alignmentBaseline={alignmentBaseline || 'hanging'}
-        textAnchor={textAnchor}
-        key={key}
-      >
-        <TSpan {...labelStyle} >
-          {label}
-        </TSpan>
-      </Text>
+    renderAxisMarker = ({
+    x, y, fill, textAnchor, key, labelStyle, label, alignmentBaseline, rtl
+  }: XAxisMarkerProps) => {
 
-    // <Text style={{...labelStyle}}>{label}</Text>
-  )
+    console.log("key === ", key);
+    const myArray = label?.split(" ")
+    return (Platform.OS == 'ios' ? <>
+      <Text x={x} y={y + 10} fill={fill} alignmentBaseline={alignmentBaseline || 'hanging'} textAnchor={textAnchor} key={key}>
+        <TSpan {...labelStyle} >{myArray[0]}</TSpan></Text>
+      <Text x={x} y={y + 25} fill={fill} alignmentBaseline={alignmentBaseline || 'hanging'} textAnchor={textAnchor} key={key}>
+        <TSpan {...labelStyle} >{myArray[1]?.substr(2, 2)}</TSpan></Text></> : <>
+      <Text x={x} y={y + 10} fill={fill} alignmentBaseline={alignmentBaseline || 'hanging'} textAnchor={textAnchor} key={key}>
+        <TSpan {...labelStyle} >{myArray[0]}</TSpan></Text><Text x={x} y={y + 25} fill={fill} alignmentBaseline={alignmentBaseline || 'hanging'} textAnchor={textAnchor} key={key}>
+        <TSpan {...labelStyle} >{myArray[1]?.substr(2, 2)}</TSpan>
+      </Text></>)
+    // <Text style={{...labelStyle}}>{label}</Text>   
+  }
 
   // For charts that want an x-label, label can be left, right, or center justified
   // If the chart has markers and a label the label is pinned to the bottom
