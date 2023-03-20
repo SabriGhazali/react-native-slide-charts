@@ -15,8 +15,6 @@ import { isAndroid, vw } from './utils/platform'
 import { interpolatePath } from 'd3-interpolate-path'
 import { ExtendedAnimatedValue, SlideAreaChartComponentProps, SlideAreaChartDefaultProps, SlideAreaChartProps } from './utils/types'
 import { isValidDate, getDataMin, getDataMax } from './utils/range'
-import Strings from '@Strings';
-import Font from '../../../../src/components/styles/Font'
 
 type State = {
   x: ExtendedAnimatedValue
@@ -651,7 +649,6 @@ class SlideAreaChart extends Component<SlideAreaChartComponentProps, State> {
           paddingRight: 0,
         }
       ]}>
-        {recharge && <Text style={{position:"absolute",left:10,top:10,fontFamily:Font.MontserratBold,fontSize:21,color:"#76A82F"}}>{total} <Text style={{fontFamily:Font.MontserratMedium,fontSize:12}}>{total == 1 || total == 0?Strings.refill :Strings.recharges}</Text></Text>}
         <AreaChart
           ref={this.chart}
           data={data}
