@@ -1,16 +1,14 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Platform, TextInput, Animated, LayoutChangeEvent,Dimensions,Text } from 'react-native'
+import { StyleSheet, View, Platform, TextInput, Animated, LayoutChangeEvent, Dimensions, Text } from 'react-native'
 import { Svg, Polygon } from 'react-native-svg'
 import { isAndroid } from '../../utils/platform'
 import { ToolTipDefaultProps, ToolTipComponentProps } from './utils/types'
-import CustomAmountText from "@common/Text/CustomAmountText"
-import Strings from '@Strings';
-import Font from '../../../../../../src/components/styles/Font'
+
 
 type State = {
   height: number
   width: number,
-  amount : string
+  amount: string
 }
 
 const WIDTH = Dimensions.get('window').width;
@@ -65,7 +63,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
       x - (width / 10) - borderRadius - ((width - (width / 5) - (2 * borderRadius)) * realPercentage)
     if (this.toolTip.current != null) {
       this.toolTip.current.setNativeProps({
-        top: y  - this.state.height - (22 * WIDTH / 375),
+        top: y - this.state.height - (22 * WIDTH / 375),
         left: labelPosition
       })
     }
@@ -102,28 +100,30 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
   }
 
   setNativeTextProps = (id: number, nativeProps: Object) => {
-    console.log("called === ",nativeProps);
+    // console.log("called === ", nativeProps);
 
-    if(nativeProps.amount && nativeProps.currency){
-      this.setState({amount : nativeProps.amount,currency :nativeProps.currency});
-    }else if (this.textInputs[id] != null && this.textInputs[id].current != null) {
+    if (nativeProps.amount || nativeProps.currency) {
+      this.setState({ amount: nativeProps.amount, currency: 'DT' });
+    } else if (this.textInputs[id] != null && this.textInputs[id].current != null) {
       this.textInputs[id].current.setNativeProps(nativeProps)
     }
   }
 
   // Create the individual textInputs
   renderTextInputs = () => {
+
+
     const { fontSize, textStyles } = this.props
     const width = this.props.width ?? null
     const inputs: JSX.Element[] = []
-    
+
     for (let i = 0; i < this.numberOfLines; i++) {
 
       // Added to account for android textInput padding / late rendering
       const baseHeight = (textStyles[i] != null && textStyles[i].fontSize != null) ?
         textStyles[i].fontSize : fontSize
       const height = baseHeight ? baseHeight + 5 : 22
-     inputs.push( i == 0 ?
+      inputs.push(i == 0 ?
         <TextInput
           scrollEnabled={false}
           numberOfLines={1}
@@ -132,27 +132,21 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
           editable={false}
           allowFontScaling={false}
           multiline
-          style={[ 
+          style={[
             styles.headerText,
-            { fontSize},
+            { fontSize },
             width ? { width } : null,
             textStyles[i],
             styles.textCentering,
             isAndroid() ? { height, paddingTop: 0, paddingBottom: 0 } : null,
           ]}
-        /> : 
-        this.props.recharge ? <Text style={{fontFamily:Font.MontserratMedium,fontSize:fontSize,color:"white"}}
-      >{this.state.amount} {this.state.amount == 1 || this.state.amount == 0 ? Strings.refill:Strings.recharges}</Text>:
-        <CustomAmountText 
-          amount={this.state.amount} 
-          key={`input-${i}`}
-          //ref={this.textInputs[i]}
-          bigFontSize={16} 
-          smallFontSize={13} 
-          expFontSize={10} 
-          amountColor={"white"} 
-          currency={this.state.currency}
-        />
+        /> :
+        <Text
+          style={{ fontSize: fontSize, color: "white" }}
+        >{this.state.amount} <Text
+        style={{ fontSize: 10, color: "white" ,bottom: 5 }}
+      >{this.state.currency}</Text>
+      </Text>
 
       )
     }
@@ -170,7 +164,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
     return (
       <View
         ref={lockTriangleCenter ? null : this.triangle}
-        style={[styles.triangleContainer, { top: this.state.height  }, lockTriangleCenter ? centerPosition : null]}
+        style={[styles.triangleContainer, { top: this.state.height }, lockTriangleCenter ? centerPosition : null]}
       >
         <Svg height={width / 5} width={width / 5} >
           <Polygon points={trianglePoint} fill={backgroundColor} />
@@ -186,14 +180,14 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
    */
   updateLayoutOnChange = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout
-    
+
     const oldHeight = this.state.height
     const oldWidth = this.state.width
     const { x, y, cursorMarkerHeight, standoff } = this.toolTipPosition
 
     // Height should not change significantly past the initial layout
     if (Math.abs(oldHeight - height) > 8) {
-      this.setState({ height : height }, () => this.setNativeToolTipPositionPropY(y , cursorMarkerHeight, standoff))
+      this.setState({ height: height }, () => this.setNativeToolTipPositionPropY(y, cursorMarkerHeight, standoff))
     }
 
     // Prevent over updating the width, this can prevent jitteriness as some devices have minimal changes
@@ -258,15 +252,15 @@ const styles = StyleSheet.create({
   },
   square: {
     position: 'absolute',
-    padding:10,
-    paddingLeft:20,
-    paddingRight:20,
+    padding: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
     top: 0,
     left: 0,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor:"red",
+    backgroundColor: "red",
     ...Platform.select({
       ios: {
         shadowColor: 'black',
