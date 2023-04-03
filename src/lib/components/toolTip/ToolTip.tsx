@@ -103,7 +103,7 @@ class ToolTip extends Component<ToolTipComponentProps, State> {
     // console.log("called === ", nativeProps);
 
     if (nativeProps.amount || nativeProps.currency) {
-      this.setState({ amount: nativeProps.amount, currency: 'DT' });
+      this.setState({ amount: nativeProps.amount, currency: nativeProps.currency });
     } else if (this.textInputs[id] != null && this.textInputs[id].current != null) {
       this.textInputs[id].current.setNativeProps(nativeProps)
     }
